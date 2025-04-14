@@ -16,79 +16,75 @@ def create_table():
         cursor = conn.cursor()
 
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS questions (
-                qid SERIAL PRIMARY KEY,
-                qtext TEXT NOT NULL,
-                qtype TEXT NOT NULL,
-                qlevel TEXT NOT NULL,
-                qtopic TEXT NOT NULL,
-                qactive BOOLEAN NOT NULL
+            CREATE TABLE IF NOT EXISTS cities (
+                cid SERIAL PRIMARY KEY,
+                cname TEXT NOT NULL,
+                state TEXT NOT NULL
             );""")
 
         conn.commit()
-        print("questions table created successfully")
+        print("cities table created successfully")
 
 
         # Creating True/False Table
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS true_false (
-                qid INTEGER PRIMARY KEY,
-                correct BOOLEAN NOT NULL,
-                FOREIGN KEY (qid) REFERENCES questions(qid) ON DELETE CASCADE
+            CREATE TABLE IF NOT EXISTS lots (
+                lid serial PRIMARY KEY,
+                num_handicap Integer NOT NULL,
+                num_guest Integer NOT NULL,
+                lot_name TEXT NOT NULL,
+                num_faculty Integer NOT NULL,
+                num_total Integer NOT NULL,
+                num_students Integer NOT NULL
             );""")
 
         conn.commit()
-        print("true_false table created successfully")
+        print("lots table created successfully")
 
 
         # Creating Multiple Choice Table
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS multiple_choice (
-                qid INTEGER PRIMARY KEY,
-                option1 TEXT NOT NULL,
-                option2 TEXT NOT NULL,
-                option3 TEXT NOT NULL,
-                option4 TEXT NOT NULL,
-                answer INTEGER CHECK (answer BETWEEN 1 AND 4),
+            CREATE TABLE IF NOT EXISTS users (
+                uid INTEGER PRIMARY KEY,
+                first_name TEXT NOT NULL,
+                last_name TEXT NOT NULL,
+                email TEXT NOT NULL,
+                is_admin boolean NOT NULL,
+                user_type enum('student', 'faculty', 'guest') not null,
+                is_handicap boolean NOT NULL,
                 FOREIGN KEY (qid) REFERENCES questions(qid) ON DELETE CASCADE
             );""")
 
         conn.commit()
-        print("multiple choice table created successfully")
+        print("users table created successfully")
 
 
         # Creating Code Blocks Table
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS code_blocks (
-                qid INTEGER PRIMARY KEY,
-                block1 TEXT NOT NULL,
-                block2 TEXT NOT NULL,
-                block3 TEXT NOT NULL,
-                block4 TEXT NOT NULL,
-                block5 TEXT NOT NULL,
-                block6 TEXT NOT NULL,
-                block7 TEXT NOT NULL,
-                block8 TEXT NOT NULL,
-                block9 TEXT NOT NULL,
-                block10 TEXT NOT NULL,
-                answer TEXT NOT NULL,
-                FOREIGN KEY (qid) REFERENCES questions(qid) ON DELETE CASCADE
+            CREATE TABLE IF NOT EXISTS cars (
+                year Integer NOT NULL,
+                make TEXT NOT NULL,
+                model TEXT NOT NULL,
+                lplate TEXT NOT NULL,
+                lstate TEXT NOT NULL,
+                Primary KEY (lplate, state)
             );""")
 
         conn.commit()
-        print("code_blocks table created successfully")
+        print("cars table created successfully")
 
 
         # Creating Free Response Table
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS free_response (
-                qid INTEGER PRIMARY KEY,
-                prof_answer TEXT NOT NULL,
-                FOREIGN KEY (qid) REFERENCES questions(qid) ON DELETE CASCADE
+            CREATE TABLE IF NOT EXISTS user_car (
+                Foreign Key (uid) references users (uid),
+	            Foreign Key (lstate) references Car (lstate), 
+	            Foreign Key (lplate) references Car(lplate),
+                Primary key (uid,lstate,lplate))
             );""")
 
         conn.commit()
-        print("free_response table created successfully")
+        print("user cars table created successfully")
 
 
         # Creating Coding Table
