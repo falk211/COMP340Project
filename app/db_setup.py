@@ -1,5 +1,5 @@
 import psycopg
-from app.db_info import *
+from db_info import *
 
 
 def create_table():
@@ -89,135 +89,76 @@ def create_table():
 
         # Creating Coding Table
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS coding (
-                qid INTEGER PRIMARY KEY,
-                starter TEXT NOT NULL,
-                testcases TEXT NOT NULL,
-                correctcode TEXT NOT NULL,
-                FOREIGN KEY (qid) REFERENCES questions(qid) ON DELETE CASCADE
+            CREATE TABLE IF NOT EXISTS attending (
+                Foreign Key (uid) references users (uid),
+                Foreign Key (state) references cities(state),
+                Foreign Key (cid) references cities(cid),
+                Primary Key (uid, state, cid)
             );""")
 
         conn.commit()
-
-
-        ##############################################
-        ##########  STORING USER RESPONSES  ##########
-        ##############################################
+        print('attending table created successfully')
 
         # User Responses Table
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS user_responses (
-                uid TEXT NOT NULL,
-                qid INTEGER NOT NULL,
-                PRIMARY KEY (uid, qid)
+            CREATE TABLE IF NOT EXISTS college_lot (
+                Foreign key (lid) references lots(lid)
+	            Foreign key (colname) references college(colname),
+	            Foreign Key (cid) references cities(cid), 
+	            Primary key(lid))
+
             );""")
 
         conn.commit()
-        print("user_response table created successfully")
+        print("college lot table created successfully")
 
 
         # User Response to Free Response
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS user_free_response (
-                uid TEXT NOT NULL,
-                qid INTEGER NOT NULL,
-                uanswer TEXT NOT NULL,
-                profanswer TEXT NOT NULL,
-                PRIMARY KEY (uid, qid)
+            CREATE TABLE IF NOT EXISTS parking (
+                Foreign key (uid) references Users(uid),
+	            Foreign key (lid) references Lots(lid),
+                Foreign key (snum) references Parking(snum),
+	            time_in datetime Not Null
+	            time_out datetime Not Null
+	            Primary key(uid,lid,snum,time_in,time_out)
+
             );""")
 
         conn.commit()
-        print("user free_response table created successfully")
+        print("parking table created successfully")
 
 
         # User Response to Multiple Choice
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS user_multiple_choice (
-                uid TEXT NOT NULL,
-                qid INTEGER NOT NULL,
-                response INTEGER NOT NULL,
-                correct INTEGER CHECK (correct BETWEEN 1 AND 4),
-                PRIMARY KEY (uid, qid)
+            CREATE TABLE IF NOT EXISTS spaces (
+                space_num Integer not null,
+	            car_restrictions enum('electric', 'compact', 'regular') not null,
+	            user_restiction enum('student', 'faculty', 'guest')  not null,
+	            is_handicap bool Not Null, 
+	            is_occupied bool Not Null,
+	            Foreign Key (lid) references Lots(lid)
+                Primary Key (space_num, lid))
+
             );""")
 
         conn.commit()
-        print("user multiple_choice table created successfully")
+        print("spaces table created successfully")
 
 
         # User Response to Coding
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS user_coding (
-                uid TEXT NOT NULL,
-                qid INTEGER NOT NULL,
-                usercode TEXT NOT NULL,
-                compile_status TEXT NOT NULL,
-                run_status TEXT NOT NULL,
-                PRIMARY KEY (uid, qid)
+            CREATE TABLE IF NOT EXISTS college (
+                colname TEXT not null,
+	            Foreign Key (cid) references cities (cid),
+	            Num_students Integer Not Null,
+	            Primary Key (colname, cid))
+
             );""")
 
         conn.commit()
-        print("user coding table created successfully")
+        print("college created successfully")
 
-
-        # User Response to Code Blocks
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS user_code_blocks (
-                uid TEXT NOT NULL,
-                qid INTEGER NOT NULL,
-                submission TEXT NOT NULL,
-                correct TEXT NOT NULL,
-                PRIMARY KEY (uid, qid)
-            );""")
-
-        conn.commit()
-        print("user_code_blocks table created successfully")
-
-
-        # User Response to True/False
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS user_true_false (
-                uid TEXT NOT NULL,
-                qid INTEGER NOT NULL,
-                response INTEGER NOT NULL,
-                correct BOOLEAN NOT NULL,
-                PRIMARY KEY (uid, qid)
-            );""")
-
-        conn.commit()
-        print("user true false table created successfully")
-
-
-        # Users Table
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS users (
-                uid TEXT PRIMARY KEY,
-                uname TEXT NOT NULL,
-                uemail TEXT NOT NULL,
-                upassword TEXT NOT NULL,
-                ustreak INTEGER NOT NULL,
-                ulastanswertime FLOAT NOT NULL,
-                uincorrect INTEGER NOT NULL,
-                ucorrect INTEGER NOT NULL,
-                upoints INTEGER NOT NULL,
-                uadmin INTEGER CHECK (uadmin BETWEEN 0 AND 1)
-            );""")
-
-        conn.commit()
-        print("users table created successfully")
-
-
-        # Question Analytics Table
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS question_analytics (
-                id SERIAL PRIMARY KEY,
-                qid INTEGER NOT NULL,
-                uid TEXT,
-                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                is_correct BOOLEAN NOT NULL
-            );""")
-
-        conn.commit()
-        print("question_analytics table created successfully")
 
 
         conn.close()
