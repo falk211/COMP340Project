@@ -14,15 +14,12 @@ class UserFuncs:
         """Initialize the connection to the SQLite database located one directory above."""
         self.db_url = f"host=dbclass.rhodescs.org dbname=practice user={DBUSER} password={DBPASS}"
 
-    ########################################
-    ########## CREATING NEW USERS ##########
-    ########################################
+
 
     def generate_unique_uid(self, cursor):
         while True:
             uid = random.randint(10000, 99999)
-            # Check if the UID already exists in the database
-            cursor.execute("SELECT 1 FROM users WHERE uid = %s", (uid,))
+            cursor.execute("SELECT uid FROM users WHERE uid = %s", (uid,))
             if not cursor.fetchone():
                 return uid
 
@@ -30,20 +27,22 @@ class UserFuncs:
     def check_user_exists(self, uid):
         connection = psycopg.connect(f"host=dbclass.rhodescs.org dbname=practice user={'falwt-25'} password={'falwt-25'}")
         cursor = connection.cursor()
-        cursor.execute("SELECT 1 FROM users WHERE uid = %s", (uid,))
+        cursor.execute('''SELECT  first_name FROM users WHERE uid = %s''', (uid,))
         result = cursor.fetchone()
+        if result is None:
+            return False
         connection.close()
-        return result
+        return True
 
     def add_user(self, first_name, last_name, email, hashed_password, user_type, is_handicap):
         try:
             connection = psycopg.connect(f"host=dbclass.rhodescs.org dbname=practice user={'falwt-25'} password={'falwt-25'}")
             cursor = connection.cursor()
 
-            # Generate a unique UID
+
             uid = self.generate_unique_uid(cursor)
 
-            # Insert the new user
+
             cursor.execute(
                 "INSERT INTO users (uid, first_name, last_name, email, password, is_admin, user_type, is_handicap) VALUES (%s, %s, %s, %s, %s, False, %s, %s)",
                 (uid, first_name, last_name, email, hashed_password, user_type, is_handicap,))
@@ -71,9 +70,7 @@ class UserFuncs:
         except Exception as e:
             print(f"Error fetching list of users: {e}")
 
-    ##################################################
-    ########## AUTHENTICATING CURRENT USERS ##########
-    ##################################################
+
 
     def get_user_by_credentials(self, email, hashed_password):
         connection = psycopg.connect(f"host=dbclass.rhodescs.org dbname=practice user={'falwt-25'} password={'falwt-25'}")
@@ -100,29 +97,6 @@ class UserFuncs:
             connection.close()
             return 0
 
-    ##################################################
-    ##########        ADMIN CHECK           ##########
-    ##################################################
-    def is_admin(self, uid):
-        """Check if a user is an admin"""
-        if not uid:
-            return False
-
-        try:
-            connection = psycopg.connect(f"host=dbclass.rhodescs.org dbname=practice user={'falwt-25'} password={'falwt-25'}")
-            cursor = connection.cursor()
-
-            cursor.execute("SELECT is_admin FROM users WHERE uid = %s", (uid,))
-            result = cursor.fetchone()
-
-            is_admin = result[0]
-
-            connection.close()
-            return is_admin
-
-        except Exception as e:
-            print(f"Error checking admin status: {e}")
-            return False
 
 
 
