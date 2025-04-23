@@ -52,6 +52,7 @@ def create_table():
                 first_name TEXT NOT NULL,
                 last_name TEXT NOT NULL,
                 email TEXT NOT NULL,
+                password TEXT NOT NULL,
                 is_admin boolean NOT NULL,
                 user_type user_type not null,
                 is_handicap boolean NOT NULL

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reserve a Space</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: url("{{ url_for('static', filename='parkinglotbackground.jpg') }}") no-repeat center center / cover;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+
+    .container {
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      backdrop-filter: blur(5px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.25);
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 2rem;
+    }
+
+    label {
+      font-weight: bold;
+      font-size: 1.1rem;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    select {
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      font-size: 1rem;
+      width: 200px;
+      margin-bottom: 20px;
+    }
+
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .button-group a, .button-group button {
+      padding: 12px;
+      font-size: 1.05rem;
+      background-color: #1e88e5;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .button-group a:hover, .button-group button:hover {
+      background-color: #1565c0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Reserve a Parking Space</h1>
+
+    <form action="/reserve_confirm/{{ uid }}" method="POST">
+      <label for="lot">Select a Parking Lot:</label>
+      <select name="lot" id="lot" required>
+        <option value="">-- Choose a lot --</option>
+        <option value="Lot A">Lot A</option>
+        <option value="Lot B">Lot B</option>
+        <option value="Lot C">Lot C</option>
+        <option value="Overflow Lot">Overflow Lot</option>
+      </select>
+
+      <div class="button-group">
+        <button type="submit">Reserve</button>
+        <a href="{{ url_for('homepage', uid=uid) }}">Return to Home</a>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
