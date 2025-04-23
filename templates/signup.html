@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up - Parking Manager</title>
+  <style>
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: url("{{ url_for('static', filename='parkinglotbackground.jpg') }}") no-repeat center center / cover;
+      color: #333;
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 26px;
+      border-radius: 12px;
+      background-color: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      font-size: 2.25rem;
+      font-weight: 600;
+      text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
+      margin-bottom: 25px;
+      animation: fadeInDown 0.7s ease-out;
+      backdrop-filter: blur(5px);
+    }
+
+    .header-logo span {
+      margin-left: 10px;
+      letter-spacing: 1px;
+    }
+
+    .signup-form {
+      width: 100%;
+      max-width: 460px;
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+      box-sizing: border-box;
+      animation: fadeInDown 0.8s ease-out;
+    }
+
+    .signup-form label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    .signup-form input,
+    .signup-form select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+      align-items: center;
+    }
+
+    .radio-group label {
+      font-weight: normal;
+    }
+
+    .signup-form button {
+      width: 100%;
+      padding: 12px;
+      background-color: #1e88e5;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .signup-form button:hover {
+      background-color: #1565c0;
+    }
+
+    .login-link {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+
+    .login-link a {
+      color: #1e88e5;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+
+    .error {
+      color: #e53935;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="header-logo">
+    🚗 <span>Parking Manager Portal - Sign Up</span>
+  </div>
+  <form class="signup-form" action="/signup" method="POST">
+    {% if error %}
+      <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <label for="first_name">First Name</label>
+    <input type="text" id="first_name" name="first_name" required />
+
+    <label for="last_name">Last Name</label>
+    <input type="text" id="last_name" name="last_name" required />
+
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" required />
+
+    <label for="usertype">User Type</label>
+    <select id="usertype" name="usertype" required>
+      <option value="">-- Select --</option>
+      <option value="student">Student</option>
+      <option value="faculty">Faculty</option>
+      <option value="guest">Guest</option>
+    </select>
+
+    <label>Are you handicapped?</label>
+    <div class="radio-group">
+      <label><input type="radio" name="handicapped" value="yes" required /> Yes</label>
+      <label><input type="radio" name="handicapped" value="no" required /> No</label>
+    </div>
+
+    <button type="submit">Create Account</button>
+
+    <div class="login-link">
+      Already have an account? <a href="{{ url_for('login') }}">Log in here</a>
+    </div>
+  </form>
+</body>
+</html>
