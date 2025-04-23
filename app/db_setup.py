@@ -14,7 +14,10 @@ def create_table():
         print(f"Server version: {conn.info.server_version}")
         print(f"Default client encoding: {conn.info.encoding}")
         cursor = conn.cursor()
-
+       # cursor.execute("Create type user_type as enum('student', 'faculty', 'guest');")
+       # conn.commit()
+       # cursor.execute("create type car_restrictions as enum('electric', 'compact', 'regular');")
+       # conn.commit()
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS cities (
                 cid SERIAL PRIMARY KEY,
@@ -50,9 +53,8 @@ def create_table():
                 last_name TEXT NOT NULL,
                 email TEXT NOT NULL,
                 is_admin boolean NOT NULL,
-                user_type enum('student', 'faculty', 'guest') not null,
-                is_handicap boolean NOT NULL,
-                FOREIGN KEY (qid) REFERENCES questions(qid) ON DELETE CASCADE
+                user_type user_type not null,
+                is_handicap boolean NOT NULL
             );""")
 
         conn.commit()
@@ -67,7 +69,7 @@ def create_table():
                 model TEXT NOT NULL,
                 lplate TEXT NOT NULL,
                 lstate TEXT NOT NULL,
-                Primary KEY (lplate, state)
+                Primary KEY (lplate, lstate)
             );""")
 
         conn.commit()
@@ -76,12 +78,14 @@ def create_table():
 
         # Creating Free Response Table
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS user_car (
-                Foreign Key (uid) references users (uid),
-	            Foreign Key (lstate) references Car (lstate), 
-	            Foreign Key (lplate) references Car(lplate),
-                Primary key (uid,lstate,lplate))
-            );""")
+                CREATE TABLE IF NOT EXISTS user_car (
+        uid     INTEGER NOT NULL,
+        lstate  TEXT NOT NULL,
+        lplate  TEXT NOT NULL,
+        PRIMARY KEY (uid, lstate, lplate),
+        FOREIGN KEY (uid) REFERENCES users(uid),
+        FOREIGN KEY (lstate, lplate) REFERENCES cars(lstate, lplate)
+    );""")
 
         conn.commit()
         print("user cars table created successfully")
@@ -90,24 +94,40 @@ def create_table():
         # Creating Coding Table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS attending (
-                Foreign Key (uid) references users (uid),
-                Foreign Key (state) references cities(state),
-                Foreign Key (cid) references cities(cid),
-                Primary Key (uid, state, cid)
-            );""")
+    uid   INTEGER NOT NULL,
+    state TEXT NOT NULL,
+    cid   INTEGER NOT NULL,
+    PRIMARY KEY (uid, state, cid),
+    FOREIGN KEY (uid) REFERENCES users(uid),
+    FOREIGN KEY (cid) REFERENCES cities(cid)
+);""")
 
         conn.commit()
         print('attending table created successfully')
+        cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS college (
+            colname      TEXT NOT NULL,
+            cid          INTEGER NOT NULL,
+            num_students INTEGER NOT NULL,
+            PRIMARY KEY (colname, cid),
+            FOREIGN KEY (cid) REFERENCES cities(cid)
+        );
+        """)
 
+        conn.commit()
+        print("college created successfully")
         # User Responses Table
+
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS college_lot (
-                Foreign key (lid) references lots(lid)
-	            Foreign key (colname) references college(colname),
-	            Foreign Key (cid) references cities(cid), 
-	            Primary key(lid))
-
-            );""")
+    lid      INTEGER NOT NULL,
+    colname  TEXT NOT NULL,
+    cid      INTEGER NOT NULL,
+    PRIMARY KEY (lid),
+    FOREIGN KEY (lid) REFERENCES lots(lid),
+    FOREIGN KEY (colname, cid) REFERENCES college(colname, cid)
+);
+""")
 
         conn.commit()
         print("college lot table created successfully")
@@ -115,15 +135,18 @@ def create_table():
 
         # User Response to Free Response
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS parking (
-                Foreign key (uid) references Users(uid),
-	            Foreign key (lid) references Lots(lid),
-                Foreign key (snum) references Parking(snum),
-	            time_in datetime Not Null
-	            time_out datetime Not Null
-	            Primary key(uid,lid,snum,time_in,time_out)
+           CREATE TABLE IF NOT EXISTS parking (
+    uid      INTEGER NOT NULL,
+    lid      INTEGER NOT NULL,
+    snum     INTEGER NOT NULL,
+    time_in  TIMESTAMP NOT NULL,
+    time_out TIMESTAMP NOT NULL,
+    PRIMARY KEY (uid, lid, snum, time_in, time_out),
+    FOREIGN KEY (uid) REFERENCES users(uid),
+    FOREIGN KEY (lid) REFERENCES lots(lid)
+);
 
-            );""")
+""")
 
         conn.commit()
         print("parking table created successfully")
@@ -132,32 +155,23 @@ def create_table():
         # User Response to Multiple Choice
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS spaces (
-                space_num Integer not null,
-	            car_restrictions enum('electric', 'compact', 'regular') not null,
-	            user_restiction enum('student', 'faculty', 'guest')  not null,
-	            is_handicap bool Not Null, 
-	            is_occupied bool Not Null,
-	            Foreign Key (lid) references Lots(lid)
-                Primary Key (space_num, lid))
-
-            );""")
+    space_num       INTEGER NOT NULL,
+    lid             INTEGER NOT NULL,  -- Define lid as INTEGER (for the foreign key)
+    car_restrictions car_restrictions NOT NULL,  -- Assuming car_restrictions is an enum type
+    user_restriction user_type NOT NULL,  -- Assuming user_type is an enum type
+    is_handicap     BOOLEAN NOT NULL,
+    is_occupied     BOOLEAN NOT NULL,
+    PRIMARY KEY (space_num, lid),
+    FOREIGN KEY (lid) REFERENCES lots(lid)  -- Foreign key for lid
+);
+""")
 
         conn.commit()
         print("spaces table created successfully")
 
 
         # User Response to Coding
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS college (
-                colname TEXT not null,
-	            Foreign Key (cid) references cities (cid),
-	            Num_students Integer Not Null,
-	            Primary Key (colname, cid))
 
-            );""")
-
-        conn.commit()
-        print("college created successfully")
 
 
 
