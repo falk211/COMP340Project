@@ -41,12 +41,34 @@ def login():
 
 
 
-@app.route('/signup')
+@app.route('/signuppage', methods=['GET'])
 def signuppage():
     return render_template('signup.html')
 
+@app.route('/signup', methods=['POST'])
+def signup():
+    first_name = request.form.get("first_name")
+    last_name = request.form.get("last_name")
+    email = request.form.get("email")
+    password = request.form.get("password")
+    user_type = request.form.get("user_type")
+    is_handicap = request.form.get("is_handicap")
+    print(first_name, last_name, email, password, user_type, is_handicap)
+
+    uid = user_funcs.add_user(first_name, last_name, email, password, user_type, is_handicap)
+
+    valid = user_funcs.check_user_exists(uid)
+    if not valid:
+        return redirect(url_for("signuppage", error="Unable to create account. Please try again."))
+
+    return redirect(url_for("homepage", uid=uid))
+
 @app.route('/homepage/<uid>')
 def homepage(uid):
+    valid = user_funcs.check_user_exists(uid)
+    if not valid:
+        return render_template('login.html', error="Unable to find account. Please login again.")
+
     return render_template('index.html', uid=uid)
 
 

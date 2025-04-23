@@ -20,16 +20,24 @@ class UserFuncs:
 
     def generate_unique_uid(self, cursor):
         while True:
-            # Generate a random 10-character alphanumeric string
-            uid = random.randint(10 ** 14, 10 ** 15 - 1)
+            uid = random.randint(10000, 99999)
             # Check if the UID already exists in the database
             cursor.execute("SELECT 1 FROM users WHERE uid = %s", (uid,))
             if not cursor.fetchone():
                 return uid
 
-    def add_user(self, first_name, last_name, email, hashed_password, uadmin, user_type, is_handicap):
+
+    def check_user_exists(self, uid):
+        connection = psycopg.connect(f"host=dbclass.rhodescs.org dbname=practice user={'falwt-25'} password={'falwt-25'}")
+        cursor = connection.cursor()
+        cursor.execute("SELECT 1 FROM users WHERE uid = %s", (uid,))
+        result = cursor.fetchone()
+        connection.close()
+        return result
+
+    def add_user(self, first_name, last_name, email, hashed_password, user_type, is_handicap):
         try:
-            connection = psycopg.connect(f"host=dbclass.rhodescs.org dbname=pico user={'falwt-25'} password={'falwt-25'}")
+            connection = psycopg.connect(f"host=dbclass.rhodescs.org dbname=practice user={'falwt-25'} password={'falwt-25'}")
             cursor = connection.cursor()
 
             # Generate a unique UID
@@ -37,8 +45,8 @@ class UserFuncs:
 
             # Insert the new user
             cursor.execute(
-                "INSERT INTO users (uid, first_name, last_name, email, password, is_admin, user_type, is_handicap) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-                (uid, first_name, last_name, email, hashed_password, uadmin, user_type, is_handicap,))
+                "INSERT INTO users (uid, first_name, last_name, email, password, is_admin, user_type, is_handicap) VALUES (%s, %s, %s, %s, %s, False, %s, %s)",
+                (uid, first_name, last_name, email, hashed_password, user_type, is_handicap,))
 
             connection.commit()
             print(f"User {email} added successfully with UID: {uid}")

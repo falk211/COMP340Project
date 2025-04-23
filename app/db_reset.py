@@ -1,5 +1,5 @@
 import psycopg
-from app.db_info import *
+from db_info import *
 
 
 def reset_tables():
@@ -18,10 +18,7 @@ def reset_tables():
 
                 # List of tables (drop in the correct order to avoid FK issues)
                 tables = [
-                    "questions", "true_false", "multiple_choice", "coding", "code_blocks",
-                    "user_responses", "user_free_response", "user_multiple_choice",
-                    "user_true_false", "user_code_blocks", "user_coding", "free_response",
-                    "users", "question_analytics"
+                    "users", "cities", "lots", "cars", "user_car", "attending", "college", "college_lot", "parking",
                 ]
 
                 # Drop tables with CASCADE to remove dependencies
