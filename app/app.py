@@ -3,9 +3,10 @@ import os
 import psycopg
 from flask import redirect, url_for, flash
 from user_funcs import UserFuncs
-
+from car_funcs import CarFuncs
 
 user_funcs = UserFuncs()
+car_funcs = CarFuncs()
 
 app = Flask(__name__, template_folder="../templates", static_folder="../static")
 app.secret_key = "your-very-secret-key"
@@ -82,9 +83,26 @@ def reserve_confirm(uid):
     selected_lot = request.form.get("lot")
     return f"Reserved {selected_lot} for user {uid}"
 
-@app.route("/add_car/<uid>")
+@app.route("/add_car/<uid>", methods=["GET", "POST"])
 def add_car(uid):
-    return f"Add car for user {uid}"
+    if request.method == 'POST':
+        year = request.form.get("year")
+        make = request.form.get("make")
+        model = request.form.get("model")
+        lplate = request.form.get("lplate")
+        lstate = request.form.get("lstate")
+        
+        car_funcs.add_car(uid, year, make, model, lplate, lstate)
+        flash("Car added successfully!", "success")
+        return redirect(url_for("add_car", uid=uid))
+    try:
+        cars = car_funcs.get_cars(uid)
+    except Exception as e:
+        print(f"Error fetching cars: {e}")
+        cars = []
+    return render_template("add_car.html", uid=uid, cars=cars)
+        
+
 
 @app.route("/add_college_page/<uid>")
 def add_college_page(uid):

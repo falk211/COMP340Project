@@ -14,8 +14,8 @@ def create_table():
         print(f"Server version: {conn.info.server_version}")
         print(f"Default client encoding: {conn.info.encoding}")
         cursor = conn.cursor()
-       # cursor.execute("Create type user_type as enum('student', 'faculty', 'guest');")
-       # conn.commit()
+        #cursor.execute("Create type user_type as enum('student', 'faculty', 'guest');")
+        #conn.commit()
        # cursor.execute("create type car_restrictions as enum('electric', 'compact', 'regular');")
        # conn.commit()
         cursor.execute("""
@@ -48,7 +48,7 @@ def create_table():
         # Creating Multiple Choice Table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS users (
-                uid INTEGER PRIMARY KEY,
+                uid serial PRIMARY KEY,
                 first_name TEXT NOT NULL,
                 last_name TEXT NOT NULL,
                 email TEXT NOT NULL,
@@ -80,13 +80,14 @@ def create_table():
         # Creating Free Response Table
         cursor.execute("""
                 CREATE TABLE IF NOT EXISTS user_car (
-        uid     INTEGER NOT NULL,
-        lstate  TEXT NOT NULL,
-        lplate  TEXT NOT NULL,
-        PRIMARY KEY (uid, lstate, lplate),
-        FOREIGN KEY (uid) REFERENCES users(uid),
-        FOREIGN KEY (lstate, lplate) REFERENCES cars(lstate, lplate)
-    );""")
+    uid INTEGER NOT NULL,
+    lstate TEXT NOT NULL,
+    lplate TEXT NOT NULL,
+    PRIMARY KEY (uid, lstate, lplate),  
+    FOREIGN KEY (uid) REFERENCES users(uid),
+    FOREIGN KEY (lstate, lplate) REFERENCES cars(lstate, lplate),
+    CONSTRAINT unique_car_per_user UNIQUE (lstate, lplate) 
+);""")
 
         conn.commit()
         print("user cars table created successfully")
@@ -159,13 +160,13 @@ def create_table():
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS spaces (
     space_num       INTEGER NOT NULL,
-    lid             INTEGER NOT NULL,  -- Define lid as INTEGER (for the foreign key)
-    car_restrictions car_restrictions NOT NULL,  -- Assuming car_restrictions is an enum type
-    user_restriction user_type NOT NULL,  -- Assuming user_type is an enum type
+    lid             INTEGER NOT NULL,  
+    car_restrictions car_restrictions NOT NULL,  
+    user_restriction user_type NOT NULL,  
     is_handicap     BOOLEAN NOT NULL,
     is_occupied     BOOLEAN NOT NULL,
     PRIMARY KEY (space_num, lid),
-    FOREIGN KEY (lid) REFERENCES lots(lid)  -- Foreign key for lid
+    FOREIGN KEY (lid) REFERENCES lots(lid)
 );
 """)
 
