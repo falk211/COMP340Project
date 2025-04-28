@@ -1,47 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Car</title>
-    <link rel="stylesheet" href="/static/styles.css"> <!-- Optional CSS -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Car</title>
+  <style>
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0; padding: 0;
+      height: 100vh;
+      background: url("{{ url_for('static', filename='parkinglotbackground.jpg') }}") no-repeat center center / cover;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+    }
+    .container {
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 30px; border-radius: 12px;
+      text-align: center; backdrop-filter: blur(5px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.25);
+      width: 420px;
+      animation: fadeInUp 0.6s ease-out;
+    }
+    h1, h2 {
+      margin: 0 0 20px;
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+    }
+    .registered-cars ul {
+      list-style: none; padding: 0; margin: 0 0 30px;
+    }
+    .registered-cars li {
+      background-color: rgba(255,255,255,0.9);
+      color: #000;
+      padding: 8px 12px;
+      margin-bottom: 8px;
+      border-radius: 6px;
+      text-align: left;
+    }
+    .registered-cars p {
+      margin-bottom: 30px;
+      font-style: italic;
+      color: #ddd;
+    }
+    .form-group {
+      margin-bottom: 16px;
+      text-align: left;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #e0e0e0;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 10px;
+      width: 100%;
+      padding: 12px;
+      font-size: 1.1rem;
+      background-color: #1e88e5;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #1565c0;
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
     <h1>My Registered Cars</h1>
-
-    <!-- Section to display registered cars -->
-    <div id="registered-cars">
-        {% if cars %}
-            <ul>
-                {% for car in cars %}
-                    <li>{{ car.make }} {{ car.model }} ({{ car.year }})</li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No cars registered yet.</p>
-        {% endif %}
+    <div class="registered-cars">
+      {% if cars %}
+        <ul>
+          {% for car in cars %}
+            <li>{{ car.make }} {{ car.model }} ({{ car.year }})</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No cars registered yet.</p>
+      {% endif %}
     </div>
 
     <h2>Register a New Car</h2>
-
-    <!-- Form to add a new car -->
     <form action="{{ url_for('add_car', uid=uid) }}" method="POST">
-        <label for="make">Make:</label>
-        <input type="text" id="make" name="make" required><br><br>
-
-        <label for="model">Model:</label>
-        <input type="text" id="model" name="model" required><br><br>
-
-        <label for="year">Year:</label>
-        <input type="number" id="year" name="year" min="1886" max="2025" required><br><br>
-
-        <label for="lplate">License Plate:</label>
-        <input type="text" id="lplate" name="lplate" required><br><br>
-
-        <label for="lstate">State:</label>
-        <input type="text" id="lstate" name="lstate" required><br><br>
-
-        <button type="submit">Add Car</button>
+      <div class="form-group">
+        <label for="make">Make</label>
+        <input type="text" id="make" name="make" required />
+      </div>
+      <div class="form-group">
+        <label for="model">Model</label>
+        <input type="text" id="model" name="model" required />
+      </div>
+      <div class="form-group">
+        <label for="year">Year</label>
+        <input type="number" id="year" name="year" min="1886" max="2025" required />
+      </div>
+      <div class="form-group">
+        <label for="lplate">License Plate</label>
+        <input type="text" id="lplate" name="lplate" required />
+      </div>
+      <div class="form-group">
+        <label for="lstate">State</label>
+        <input type="text" id="lstate" name="lstate" required />
+      </div>
+      <button type="submit">Add Car</button>
     </form>
+  </div>
 </body>
 </html>
