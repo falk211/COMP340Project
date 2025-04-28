@@ -53,7 +53,7 @@
       animation: fadeInUp 0.8s ease-out;
     }
 
-    .button-group a {
+    .button-group a, .button-group button {
       display: block;
       padding: 15px;
       background-color: #1e88e5;
@@ -63,10 +63,12 @@
       font-size: 1.1rem;
       border-radius: 8px;
       font-weight: bold;
+      cursor: pointer;
       transition: background-color 0.3s ease;
+      border: none;
     }
 
-    .button-group a:hover {
+    .button-group a:hover, .button-group button:hover {
       background-color: #1565c0;
     }
   </style>
@@ -80,8 +82,11 @@
   <div class="button-group">
     <a href="{{ url_for('reserve_space', uid=uid) }}">Reserve a Space</a>
     <a href="{{ url_for('add_car', uid=uid) }}">Add a Car</a>
-    <a href="{{ url_for('add_college', uid=uid) }}">Add a College</a>
+    <a href="{{ url_for('add_college_page', uid=uid) }}">Add a College</a>
     <a href="{{ url_for('remove_college', uid=uid) }}">Remove a College</a>
+
+    <!-- Logout Button -->
+    <a href="{{ url_for('loginpage') }}">Logout</a>
   </div>
 </body>
 </html>

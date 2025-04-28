@@ -86,9 +86,21 @@ def reserve_confirm(uid):
 def add_car(uid):
     return f"Add car for user {uid}"
 
-@app.route("/add_college/<uid>")
+@app.route("/add_college_page/<uid>")
+def add_college_page(uid):
+    all_colleges = user_funcs.get_all_colleges()
+    print(all_colleges)
+    return render_template("add_college.html", college_list = all_colleges, uid=uid)
+
+@app.route("/add_college/<uid>", methods=["POST"])
 def add_college(uid):
-    return f"Add college for user {uid}"
+    college = request.form.get("college_name")
+    city = request.form.get("city_name")
+    state = request.form.get("state_name")
+
+    result = user_funcs.add_college(uid, college, city, state)
+
+    print(f"Added college {college} for user {uid}")
 
 @app.route("/remove_college/<uid>")
 def remove_college(uid):

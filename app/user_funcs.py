@@ -10,7 +10,7 @@ from db_info import *
 
 class UserFuncs:
 
-    def __init__(self, db_filename="pico.db"):
+    def __init__(self, db_filename="practice.db"):
         """Initialize the connection to the SQLite database located one directory above."""
         self.db_url = f"host=dbclass.rhodescs.org dbname=practice user={DBUSER} password={DBPASS}"
 
@@ -97,6 +97,25 @@ class UserFuncs:
             connection.close()
             return 0
 
+
+
+
+
+    def get_all_colleges(self):
+        connection = psycopg.connect(f"host=dbclass.rhodescs.org dbname=practice user={'falwt-25'} password={'falwt-25'}", row_factory=dict_row)
+        cursor = connection.cursor()
+        cursor.execute("SELECT colname, cname, state FROM college co join cities ci on co.cid = ci.cid")
+        colleges = cursor.fetchall()
+        connection.close()
+        return colleges
+
+
+
+    def add_college(self, uid, college, city, state):
+        connection = psycopg.connect(f"host=dbclass.rhodescs.org dbname=practice user={'falwt-25'} password={'falwt-25'}")
+        cursor = connection.cursor()
+        cursor.execute("INSERT INTO attending (uid, college, cid, state) VALUES (%s, %s, %s, %s)", (uid, college, city, state,))
+        connection.commit()
 
 
 

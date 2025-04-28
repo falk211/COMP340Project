@@ -96,10 +96,12 @@ def create_table():
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS attending (
     uid   INTEGER NOT NULL,
+    college TEXT NOT NULL,
     state TEXT NOT NULL,
     cid   INTEGER NOT NULL,
     PRIMARY KEY (uid, state, cid),
     FOREIGN KEY (uid) REFERENCES users(uid),
+    FOREIGN KEY (college) REFERENCES college(colname),
     FOREIGN KEY (cid) REFERENCES cities(cid)
 );""")
 
