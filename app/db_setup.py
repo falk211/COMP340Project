@@ -92,22 +92,6 @@ def create_table():
         conn.commit()
         print("user cars table created successfully")
 
-
-        # Creating Coding Table
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS attending (
-    uid   INTEGER NOT NULL,
-    college TEXT NOT NULL,
-    state TEXT NOT NULL,
-    cid   INTEGER NOT NULL,
-    PRIMARY KEY (uid, state, cid),
-    FOREIGN KEY (uid) REFERENCES users(uid),
-    FOREIGN KEY (college) REFERENCES college(colname),
-    FOREIGN KEY (cid) REFERENCES cities(cid)
-);""")
-
-        conn.commit()
-        print('attending table created successfully')
         cursor.execute("""
                     CREATE TABLE IF NOT EXISTS college (
             colname      TEXT NOT NULL,
@@ -120,7 +104,23 @@ def create_table():
 
         conn.commit()
         print("college created successfully")
-        # User Responses Table
+
+
+        # Creating Coding Table
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS attending (
+    uid   INTEGER NOT NULL,
+    college TEXT NOT NULL,
+    state TEXT NOT NULL,
+    cid   INTEGER NOT NULL,
+    PRIMARY KEY (uid, college, state, cid),
+    FOREIGN KEY (uid) REFERENCES users(uid),
+    FOREIGN KEY (college, cid) REFERENCES college(colname, cid)
+);""")
+
+        conn.commit()
+        print('attending table created successfully')
+
 
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS college_lot (

@@ -114,11 +114,17 @@ def add_college_page(uid):
 def add_college(uid):
     college = request.form.get("college_name")
     city = request.form.get("city_name")
-    state = request.form.get("state_name")
-
+    state = request.form.get("state")
+    print(college, city, state)
+    success_msg = f"Successfully added {college} ({city}, {state})"
     result = user_funcs.add_college(uid, college, city, state)
-
     print(f"Added college {college} for user {uid}")
+    all_colleges = user_funcs.get_all_colleges()
+    if result:
+        return redirect(url_for("homepage", uid=uid))
+
+
+
 
 @app.route("/remove_college/<uid>")
 def remove_college(uid):

@@ -79,12 +79,14 @@ def insert_colleges(n=3):
 def link_users_to_attending():
     cursor.execute("SELECT uid FROM users")
     users = cursor.fetchall()
-    cursor.execute("SELECT cid, state FROM cities")
-    cities = cursor.fetchall()
+    cursor.execute("SELECT cid, colname FROM college")
+    college = cursor.fetchall()
     for uid in users:
-        cid, state = random.choice(cities)
+        cid, colname = random.choice(college)
+        cursor.execute("SELECT state FROM cities where cid = %s", (cid,))
+        state = cursor.fetchone()[0]
         cursor.execute("""
-            INSERT INTO attending (uid, state, cid) VALUES (%s, %s, %s)""", (uid[0], state, cid))
+            INSERT INTO attending (uid, college, state, cid) VALUES (%s, %s, %s, %s)""", (uid[0], colname, state, cid))
 
 def link_lots_to_colleges():
 

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Remove College</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0; padding: 0;
+      height: 100vh;
+      background: url("{{ url_for('static', filename='parkinglotbackground.jpg') }}") no-repeat center center / cover;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      color: #fff;
+    }
+
+    .container {
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 30px; border-radius: 12px;
+      text-align: center; backdrop-filter: blur(5px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.25);
+      width: 400px;
+    }
+
+    h1 {
+      margin-bottom: 20px; font-size: 2rem;
+    }
+
+    #collegeSearch {
+      width: 100%; padding: 12px;
+      font-size: 1rem; border-radius: 6px;
+      border: none; margin-bottom: 10px;
+    }
+
+    .option-list {
+      max-height: 200px; overflow-y: auto;
+      text-align: left; background-color: rgba(255,255,255,0.9);
+      border-radius: 6px; color: #000;
+    }
+
+    .option-item {
+      padding: 10px 15px; cursor: pointer;
+      border-bottom: 1px solid #ccc;
+    }
+    .option-item:hover {
+      background-color: #e0e0e0;
+    }
+
+    button {
+      margin-top: 20px; width: 100%; padding: 12px;
+      font-size: 1.05rem; background-color: #e53935;
+      color: white; border: none; border-radius: 8px;
+      font-weight: bold; cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #c62828;
+    }
+  </style>
+  <script>
+    let selectedCollege = "";
+
+    function filterOptions() {
+      const input = document.getElementById("collegeSearch").value.toLowerCase();
+      document.querySelectorAll(".option-item").forEach(item => {
+        item.style.display = item.dataset.filter.includes(input) ? "" : "none";
+      });
+    }
+
+    function selectCollege(collegeName, cityName, stateName) {
+      selectedCollege = collegeName;
+      document.getElementById("collegeSearch").value = collegeName;
+      document.getElementById("college_name").value  = collegeName;
+      document.getElementById("city_name").value     = cityName;
+      document.getElementById("state").value         = stateName;
+    }
+
+    function validateForm() {
+      if (!selectedCollege) {
+        alert("Please select a college to remove.");
+        return false;
+      }
+      return true;
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>Remove a College</h1>
+    <form action="{{ url_for('remove_college', uid=uid) }}" method="POST" onsubmit="return validateForm()">
+      <input
+        type="text"
+        id="collegeSearch"
+        placeholder="Search colleges..."
+        oninput="filterOptions()"
+        autocomplete="off"
+      />
+
+      <div class="option-list">
+        {% for entry in college_list %}
+          <div
+            class="option-item"
+            data-filter="{{ (entry.colname + ' ' + entry.cname + ' ' + entry.state).lower() }}"
+            onclick="selectCollege(
+              '{{ entry.colname|e }}',
+              '{{ entry.cname|e }}',
+              '{{ entry.state|e }}'
+            )"
+          >
+            <strong>{{ entry.colname }}</strong><br>
+            <small>{{ entry.cname }}, {{ entry.state }}</small>
+          </div>
+        {% endfor %}
+      </div>
+
+      <input type="hidden" name="college_name" id="college_name" />
+      <input type="hidden" name="city_name"    id="city_name"    />
+      <input type="hidden" name="state"        id="state"        />
+
+      <button type="submit">Remove College</button>
+    </form>
+  </div>
+</body>
+</html>

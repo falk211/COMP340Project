@@ -114,8 +114,16 @@ class UserFuncs:
     def add_college(self, uid, college, city, state):
         connection = psycopg.connect(f"host=dbclass.rhodescs.org dbname=practice user={'falwt-25'} password={'falwt-25'}")
         cursor = connection.cursor()
-        cursor.execute("INSERT INTO attending (uid, college, cid, state) VALUES (%s, %s, %s, %s)", (uid, college, city, state,))
+        cursor.execute("SELECT cid FROM cities WHERE cname = %s AND state = %s", (city, state,))
+        cid = cursor.fetchone()[0]
+        cursor.execute("INSERT INTO attending (uid, college, cid, state) VALUES (%s, %s, %s, %s)", (uid, college, cid, state,))
         connection.commit()
+        cursor.execute("SELECT uid FROM attending where uid = %s and college = %s", (uid,college,))
+        result = cursor.fetchone()
+        connection.close()
+        if result is None:
+            return False
+        return True
 
 
 
