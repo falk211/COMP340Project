@@ -77,12 +77,16 @@ def homepage(uid):
 
 @app.route("/reserve/<uid>", methods=["GET"])
 def reserve_space(uid):
-    return render_template("reserve_space.html", uid=uid)
+    lots = car_funcs.get_lots(uid)
+    return render_template("reserve_space.html", lot_list=lots, uid=uid)
 
 
 @app.route("/reserve_confirm/<uid>", methods=["POST"])
 def reserve_confirm(uid):
     selected_lot = request.form.get("lot")
+    success = car_funcs.reserve_space(uid, selected_lot)
+    if not success:
+        return render_template("reserve_space.html", lot_list=[], uid=uid, error="Unable to reserve space. Please try again.")
     return f"Reserved {selected_lot} for user {uid}"
 
 @app.route("/add_car/<uid>", methods=["GET", "POST"])
@@ -108,7 +112,7 @@ def add_car(uid):
 
 @app.route("/add_college_page/<uid>")
 def add_college_page(uid):
-    all_colleges = user_funcs.get_user_colleges(uid)
+    all_colleges = user_funcs.get_user_noncolleges(uid)
     print(all_colleges)
     return render_template("add_college.html", college_list = all_colleges, uid=uid)
 
@@ -128,8 +132,14 @@ def add_college(uid):
 
 
 
-@app.route("/remove_college/<uid>")
+@app.route("/remove_college_page/<uid>")
+def remove_college_page(uid):
+    colleges = user_funcs.get_user_colleges(uid)
+    return render_template("remove_college.html", college_list = colleges, uid=uid)
+
+@app.route("/remove_college/<uid>", methods=["POST"])
 def remove_college(uid):
+<<<<<<< HEAD
     return render_template("remove_college.html", uid=uid)
 
 
@@ -167,6 +177,18 @@ def admin_users(uid):
     # Fetch all users from the database
     users = user_funcs.get_users()
     return render_template("admin_users.html", uid=uid, users=users)
+=======
+    colname = request.form.get("college_name")
+    city = request.form.get("city_name")
+    state = request.form.get("state")
+    print(colname, city, state)
+    success_msg = f"Successfully added {colname} ({city}, {state})"
+    result = user_funcs.remove_college(uid, colname, city, state)
+    print(f"Added college {colname} for user {uid}")
+    all_colleges = user_funcs.get_all_colleges()
+    if result:
+        return redirect(url_for("homepage", uid=uid))
+>>>>>>> refs/remotes/origin/main
 
 
 

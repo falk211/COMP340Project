@@ -108,19 +108,27 @@ class UserFuncs:
         connection.close()
         return colleges
 
-    def get_user_colleges(self, uid):
+    def get_user_noncolleges(self, uid):
         connection = psycopg.connect(f"host=dbclass.rhodescs.org dbname=practice user={'falwt-25'} password={'falwt-25'}")
         cursor = connection.cursor()
         cursor.execute("""SELECT co.colname, ci.cname, ci.state
             FROM college co
             JOIN cities ci ON co.cid = ci.cid
-            WHERE NOT EXISTS (
-                SELECT 1 
-                FROM attending a
-                WHERE a.uid = %s
-                AND a.colname = co.colname
-                AND a.cid = co.cid
+            WHERE NOT EXISTS (SELECT * FROM attending a WHERE a.uid = %s AND a.colname = co.colname AND a.cid = co.cid
             );""", (uid,))
+        colleges = cursor.fetchall()
+        connection.close()
+        return colleges
+
+    def get_user_colleges(self,uid):
+        connection = psycopg.connect(
+            f"host=dbclass.rhodescs.org dbname=practice user={'falwt-25'} password={'falwt-25'}")
+        cursor = connection.cursor()
+        cursor.execute("""SELECT co.colname, ci.cname, ci.state
+                    FROM college co
+                    JOIN cities ci ON co.cid = ci.cid
+                    WHERE EXISTS (SELECT * FROM attending a WHERE a.uid = %s AND a.colname = co.colname AND a.cid = co.cid
+                    );""", (uid,))
         colleges = cursor.fetchall()
         connection.close()
         return colleges
@@ -193,6 +201,23 @@ class UserFuncs:
             print(f"Error fetching statistics: {e}")
             return {}
 
+    def remove_college(self,uid, college, city, state ):
+        connection = psycopg.connect(
+            f"host=dbclass.rhodescs.org dbname=practice user={'falwt-25'} password={'falwt-25'}")
+        cursor = connection.cursor()
+        cursor.execute("SELECT cid FROM cities WHERE cname = %s AND state = %s", (city, state,))
+        cid = cursor.fetchone()[0]
+        cursor.execute("DELETE FROM attending WHERE uid = %s AND colname = %s AND cid=%s AND state=%s ",
+                       (uid, college, cid, state,))
+        connection.commit()
+        cursor.execute("SELECT uid FROM attending where uid = %s and colname = %s", (uid, college,))
+        result = cursor.fetchone()
+        connection.close()
+        if result is None:
+            return True
+        return False
+    
+    
 if __name__ == '__main__':
     service = UserFuncs()
 
