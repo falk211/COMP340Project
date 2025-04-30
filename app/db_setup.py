@@ -29,7 +29,6 @@ def create_table():
         print("cities table created successfully")
 
 
-        # Creating True/False Table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS lots (
                 lid serial PRIMARY KEY,
@@ -45,7 +44,6 @@ def create_table():
         print("lots table created successfully")
 
 
-        # Creating Multiple Choice Table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 uid serial PRIMARY KEY,
@@ -62,7 +60,6 @@ def create_table():
         print("users table created successfully")
 
 
-        # Creating Code Blocks Table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS cars (
                 year Integer NOT NULL,
@@ -77,7 +74,6 @@ def create_table():
         print("cars table created successfully")
 
 
-        # Creating Free Response Table
         cursor.execute("""
                 CREATE TABLE IF NOT EXISTS user_car (
     uid INTEGER NOT NULL,
@@ -106,7 +102,6 @@ def create_table():
         print("college created successfully")
 
 
-        # Creating Coding Table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS attending (
     uid   INTEGER NOT NULL,
@@ -137,14 +132,13 @@ def create_table():
         print("college lot table created successfully")
 
 
-        # User Response to Free Response
         cursor.execute("""
            CREATE TABLE IF NOT EXISTS parking (
     uid      INTEGER NOT NULL,
     lid      INTEGER NOT NULL,
     snum     INTEGER NOT NULL,
     time_in  TIMESTAMP NOT NULL,
-    time_out TIMESTAMP NOT NULL,
+    time_out TIMESTAMP,
     PRIMARY KEY (uid, lid, snum, time_in, time_out),
     FOREIGN KEY (uid) REFERENCES users(uid),
     FOREIGN KEY (lid) REFERENCES lots(lid)
@@ -156,7 +150,6 @@ def create_table():
         print("parking table created successfully")
 
 
-        # User Response to Multiple Choice
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS spaces (
     space_num       INTEGER NOT NULL,
@@ -174,7 +167,6 @@ def create_table():
         print("spaces table created successfully")
 
 
-        # User Response to Coding
 
 
 

@@ -75,12 +75,16 @@ def homepage(uid):
 
 @app.route("/reserve/<uid>", methods=["GET"])
 def reserve_space(uid):
-    return render_template("reserve_space.html", uid=uid)
+    lots = car_funcs.get_lots(uid)
+    return render_template("reserve_space.html", lot_list=lots, uid=uid)
 
 
 @app.route("/reserve_confirm/<uid>", methods=["POST"])
 def reserve_confirm(uid):
     selected_lot = request.form.get("lot")
+    success = car_funcs.reserve_space(uid, selected_lot)
+    if not success:
+        return render_template("reserve_space.html", lot_list=[], uid=uid, error="Unable to reserve space. Please try again.")
     return f"Reserved {selected_lot} for user {uid}"
 
 @app.route("/add_car/<uid>", methods=["GET", "POST"])
