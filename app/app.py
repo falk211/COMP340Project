@@ -87,7 +87,49 @@ def reserve_confirm(uid):
     success = car_funcs.reserve_space(uid, selected_lot)
     if not success:
         return render_template("reserve_space.html", lot_list=[], uid=uid, error="Unable to reserve space. Please try again.")
-    return f"Reserved {selected_lot} for user {uid}"
+    return redirect(url_for("homepage", uid=uid))
+
+
+@app.route("/check_in_page/<uid>", methods=["GET"])
+def check_in_page(uid):
+    print("test")
+    reservations = user_funcs.get_reservations(uid)
+    print("test2")
+    print(reservations)
+    return render_template("check_in_page.html", reservations=reservations, uid=uid)
+
+
+@app.route("/check_in/<uid>", methods=["POST"])
+def check_in(uid):
+    lot = request.form.get("lot_name")
+    space = request.form.get("snum")
+    print(lot, space)
+    success = user_funcs.check_in(uid, lot, space)
+    if not success:
+        return render_template("check_in_page.html", reservations=[], uid=uid, error="Unable to check in. Please try again.")
+    return redirect(url_for("homepage", uid=uid))
+
+
+@app.route("/check_out_page/<uid>", methods=["GET"])
+def check_out_page(uid):
+    reservations = user_funcs.get_parked_reservations(uid)
+    print(reservations)
+    return render_template("check_out_page.html", reservations=reservations, uid=uid)
+
+
+@app.route("/check_out/<uid>", methods=["POST"])
+def check_out(uid):
+    lot = request.form.get("lot_name")
+    space = request.form.get("snum")
+    print(lot, space)
+    success = user_funcs.check_out(uid, lot, space)
+    if not success:
+        return render_template("check_out_page.html", reservations=[], uid=uid, error="Unable to check in. Please try again.")
+    return redirect(url_for("homepage", uid=uid))
+
+
+
+
 
 @app.route("/add_car/<uid>", methods=["GET", "POST"])
 def add_car(uid):
