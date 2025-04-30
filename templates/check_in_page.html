@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Check In</title>
+  <style>
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0; padding: 0;
+      height: 100vh;
+      background: url("{{ url_for('static', filename='parkinglotbackground.jpg') }}") no-repeat center center / cover;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+    }
+    .container {
+      background-color: rgba(0,0,0,0.6);
+      padding: 30px; border-radius: 12px;
+      text-align: center; backdrop-filter: blur(5px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.25);
+      width: 360px;
+      animation: fadeInUp 0.6s ease-out;
+    }
+    h1 {
+      margin-bottom: 20px; font-size: 2rem;
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+    }
+    label {
+      display: block; font-weight: bold;
+      margin-bottom: 10px; font-size: 1.1rem;
+    }
+    select {
+      width: 100%; padding: 10px;
+      border-radius: 6px; border: none;
+      font-size: 1rem; margin-bottom: 20px;
+      box-sizing: border-box;
+    }
+    .button-group {
+      display: flex; flex-direction: column;
+      gap: 15px; margin-top: 10px;
+    }
+    .button-group button,
+    .button-group a {
+      padding: 12px; font-size: 1.05rem;
+      background-color: #1e88e5; color: white;
+      border: none; border-radius: 8px;
+      text-decoration: none; font-weight: bold;
+      cursor: pointer; transition: background-color 0.3s ease;
+      display: block; text-align: center;
+    }
+    .button-group button:hover,
+    .button-group a:hover {
+      background-color: #1565c0;
+    }
+  </style>
+  <script>
+    function onReservationChange(select) {
+      const [lot, snum] = select.value.split('|');
+      document.getElementById('lot_name').value = lot;
+      document.getElementById('snum').value      = snum;
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>Check In</h1>
+    <form action="{{ url_for('check_in', uid=uid) }}" method="POST">
+      <input type="hidden" name="uid" id="uid" value="{{ uid }}" />
+
+      <label for="reservation">Select a Reservation:</label>
+      <select name="reservation" id="reservation" required onchange="onReservationChange(this)">
+        <option value="">-- Choose a reservation --</option>
+        {% for res in reservations %}
+          <option value="{{ res.lot_name }}|{{ res.snum }}">
+            {{ res.lot_name }} – Space {{ res.snum }}
+          </option>
+        {% endfor %}
+      </select>
+
+      <input type="hidden" name="lot_name" id="lot_name" />
+      <input type="hidden" name="snum"      id="snum"      />
+
+      <div class="button-group">
+        <button type="submit">Check In</button>
+        <a href="{{ url_for('homepage', uid=uid) }}">Return to Home</a>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

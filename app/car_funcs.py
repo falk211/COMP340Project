@@ -59,11 +59,11 @@ class CarFuncs:
             cursor = conn.cursor()
             cursor.execute('''select lid from lots where lot_name = %s''', (lot_name,))
             lid = cursor.fetchone()['lid']
-            cursor.execute('''select space_num from spaces where lid = %s''', (lid,))
-            space_num = cursor.fetchone()['space_num']
-            cursor.execute('''update spaces set is_occupied = true where lid = %s and space_num = %s''', (lid, space_num,))
+            cursor.execute('''select snum from spaces where lid = %s''', (lid,))
+            space_num = cursor.fetchone()['snum']
+            cursor.execute('''update spaces set is_occupied = true where lid = %s and snum = %s''', (lid, space_num,))
             conn.commit()
-            cursor.execute('''insert into parking (uid, lid, space_num, time_in, time_out) values (%s, %s, %s, now(), null)''', (uid, lid, space_num,))
+            cursor.execute('''insert into parking (uid, lid, snum, res_time, time_in, time_out) values (%s, %s, %s, now(), null, null)''', (uid, lid, space_num,))
             conn.commit()
             conn.close()
 

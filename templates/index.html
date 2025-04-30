@@ -6,31 +6,22 @@
   <title>Parking Manager - Home</title>
   <style>
     @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0;
       height: 100vh;
       background: url("{{ url_for('static', filename='parkinglotbackground.jpg') }}") no-repeat center center / cover;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
       color: #fff;
     }
 
     .header {
-      background-color: rgba(0, 0, 0, 0.6);
+      background-color: rgba(0,0,0,0.6);
       padding: 20px 40px;
       border-radius: 12px;
       margin-bottom: 40px;
@@ -42,25 +33,34 @@
     .header h1 {
       margin: 0;
       font-size: 2.5rem;
-      text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
     }
 
     .button-group {
       display: flex;
       flex-direction: column;
+      align-items: center;
       gap: 20px;
-      width: 250px;
+      width: 360px;
       animation: fadeInUp 0.8s ease-out;
     }
 
-    .button-group a, .button-group button {
-      display: block;
-      padding: 15px;
+    .button-row {
+      display: flex;
+      gap: 20px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .button-group a,
+    .button-group button {
+      flex: 1;
+      padding: 12px;
       background-color: #1e88e5;
-      text-align: center;
       color: white;
       text-decoration: none;
-      font-size: 1.1rem;
+      text-align: center;
+      font-size: 1.05rem;
       border-radius: 8px;
       font-weight: bold;
       cursor: pointer;
@@ -68,8 +68,26 @@
       border: none;
     }
 
-    .button-group a:hover, .button-group button:hover {
+    .button-group a:hover,
+    .button-group button:hover {
       background-color: #1565c0;
+    }
+
+    .button-group .checkin {
+      background-color: #4caf50;
+    }
+
+    .button-group .checkin:hover {
+      background-color: #388e3c;
+    }
+
+    /* New red style for Check Out */
+    .button-group .checkout {
+      background-color: #e53935;
+    }
+
+    .button-group .checkout:hover {
+      background-color: #c62828;
     }
   </style>
 </head>
@@ -80,12 +98,25 @@
   </div>
 
   <div class="button-group">
+    <!-- Reserve Space alone -->
     <a href="{{ url_for('reserve_space', uid=uid) }}">Reserve a Space</a>
-    <a href="{{ url_for('add_car', uid=uid) }}">Add a Car</a>
-    <a href="{{ url_for('add_college_page', uid=uid) }}">Add a College</a>
-    <a href="{{ url_for('remove_college_page', uid=uid) }}">Remove a College</a>
 
-    <!-- Logout Button -->
+    <!-- Check In & Check Out on same row -->
+    <div class="button-row">
+      <a href="{{ url_for('check_in_page', uid=uid) }}" class="checkin">Check In</a>
+      <a href="{{ url_for('check_out_page', uid=uid) }}" class="checkout">Check Out</a>
+    </div>
+
+    <!-- Add Car alone -->
+    <a href="{{ url_for('add_car', uid=uid) }}">Add a Car</a>
+
+    <!-- Add & Remove College on same row -->
+    <div class="button-row">
+      <a href="{{ url_for('add_college_page', uid=uid) }}">Add a College</a>
+      <a href="{{ url_for('remove_college_page', uid=uid) }}">Remove a College</a>
+    </div>
+
+    <!-- Logout -->
     <a href="{{ url_for('loginpage') }}">Logout</a>
   </div>
 </body>

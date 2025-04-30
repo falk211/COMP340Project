@@ -172,7 +172,8 @@ def insert_parking_data(num =10):
         uid = random.choice(user_ids)
         lid, snum = random.choice(spaces)
 
-        time_in = fake.date_time_between(start_date='-30d', end_date='now')
+        res_time = fake.date_time_between(start_date='-30d', end_date='now')
+        time_in = res_time
 
         if random.random() < 0.7:
             duration = timedelta(minutes=random.randint(15, 300))
@@ -183,9 +184,9 @@ def insert_parking_data(num =10):
             still_parked = True
 
         cursor.execute("""
-                        INSERT INTO parking (uid, lid, snum, time_in, time_out)
-                        VALUES (%s, %s, %s, %s, %s)
-                    """, (uid, lid, snum, time_in, time_out))
+                        INSERT INTO parking (uid, lid, snum, res_time, time_in, time_out)
+                        VALUES (%s, %s, %s, %s, %s, %s)
+                    """, (uid, lid, snum, res_time, time_in, time_out))
 
         if still_parked:
                 cursor.execute("""

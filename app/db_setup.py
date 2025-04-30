@@ -137,9 +137,10 @@ def create_table():
     uid      INTEGER NOT NULL,
     lid      INTEGER NOT NULL,
     snum     INTEGER NOT NULL,
-    time_in  TIMESTAMP NOT NULL,
+    res_time TIMESTAMP NOT NULL,
+    time_in  TIMESTAMP,
     time_out TIMESTAMP,
-    PRIMARY KEY (uid, lid, snum, time_in),
+    PRIMARY KEY (uid, lid, snum, res_time),
     FOREIGN KEY (uid) REFERENCES users(uid),
     FOREIGN KEY (lid) REFERENCES lots(lid)
 );

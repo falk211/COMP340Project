@@ -121,6 +121,50 @@ class UserFuncs:
         connection.close()
         return colleges
 
+
+    def get_reservations(self,uid):
+        connection = psycopg.connect(f"host=dbclass.rhodescs.org dbname=practice user={'falwt-25'} password={'falwt-25'}", row_factory=dict_row)
+        cursor = connection.cursor()
+        cursor.execute('''SELECT lot_name, snum from parking p join lots l on p.lid = l.lid where p.uid = %s and time_in IS NULL''', (uid,))
+        reservations = cursor.fetchall()
+        return reservations
+
+    def get_parked_reservations(self,uid):
+        connection = psycopg.connect(f"host=dbclass.rhodescs.org dbname=practice user={'falwt-25'} password={'falwt-25'}", row_factory=dict_row)
+        cursor = connection.cursor()
+        cursor.execute('''SELECT lot_name, snum from parking p join lots l on p.lid = l.lid where p.uid = %s and time_in IS NOT NULL and time_out IS NULL''', (uid,))
+        reservations = cursor.fetchall()
+        return reservations
+
+
+    def check_in(self, uid, lot_name, space_num):
+        try:
+            conn = psycopg.connect(f"host=dbclass.rhodescs.org dbname=practice user={'falwt-25'} password={'falwt-25'}", row_factory=dict_row)
+            cursor = conn.cursor()
+            cursor.execute('''update parking set time_in = now(), time_out = null where uid = %s and snum = %s and lid = (select lid from lots where lot_name = %s)''', (uid, space_num, lot_name,))
+            conn.commit()
+            conn.close()
+            return True
+        except Exception as e:
+            print(f"Error checking in: {e}")
+            return False
+
+    def check_out(self, uid, lot_name, space_num):
+        try:
+            conn = psycopg.connect(f"host=dbclass.rhodescs.org dbname=practice user={'falwt-25'} password={'falwt-25'}", row_factory=dict_row)
+            cursor = conn.cursor()
+            cursor.execute(
+                '''update parking set time_out = now() where uid = %s and snum = %s and lid = (select lid from lots where lot_name = %s)''',
+                (uid, space_num, lot_name,))
+            conn.commit()
+            conn.close()
+            return True
+        except Exception as e:
+            print(f"Error checking in: {e}")
+            return False
+
+
+
     def get_user_colleges(self,uid):
         connection = psycopg.connect(
             f"host=dbclass.rhodescs.org dbname=practice user={'falwt-25'} password={'falwt-25'}")
