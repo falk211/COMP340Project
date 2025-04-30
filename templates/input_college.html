@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Input College</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Input a College</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('input_college', uid=uid) }}">
+            <div class="mb-3">
+                <label for="college_name" class="form-label">College Name</label>
+                <input type="text" class="form-control" name="college_name" required>
+            </div>
+            <div class="mb-3">
+                <label for="num_students" class="form-label">Number of Students</label>
+                <input type="number" class="form-control" name="num_students" required>
+            </div>
+            <div class="mb-3">
+                <label for="cid" class="form-label">City</label>
+                <select name="cid" class="form-select" required>
+                    {% for cid, cname, state in cities %}
+                        <option value="{{ cid }}">{{ cname }}, {{ state }} (cid={{ cid }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit College</button>
+        </form>
+        <div class="text-center mt-4">
+            <a href="{{ url_for('adminpage', uid=uid) }}" class="btn btn-secondary">Back to Admin Page</a>
+        </div>
+        
+    </div>
+</body>
+</html>

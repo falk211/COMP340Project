@@ -181,21 +181,22 @@ class UserFuncs:
             cursor.execute("SELECT colname, COUNT(*) FROM attending GROUP BY colname")
             colleges = cursor.fetchall()
 
-            # Count admin vs non-admin users
-            cursor.execute("SELECT is_admin, COUNT(*) FROM users GROUP BY is_admin")
-            admin_status = cursor.fetchall()
+            # Count global occupancy
+            cursor.execute("SELECT COUNT(*) FILTER (WHERE is_occupied = TRUE) AS occupied, COUNT(*) FILTER (WHERE is_occupied = FALSE) AS unoccupied FROM spaces")
+            global_occupancy = cursor.fetchall()
 
-            # Count cars by make
-            cursor.execute("SELECT make, COUNT(*) FROM cars GROUP BY make")
-            car_makes = cursor.fetchall()
+            # Count occupancy by college
+            cursor.execute("SELECT college_lot.colname, COUNT(*) FILTER (WHERE spaces.is_occupied = TRUE) AS occupied_count FROM spaces JOIN lots ON spaces.lid = lots.lid JOIN college_lot ON lots.lid = college_lot.lid GROUP BY college_lot.colname ORDER BY occupied_count DESC")
+    
+            college_occupancy = cursor.fetchall()
 
             connection.close()
             return {
                 "user_types": user_types,
                 "handicap_status": handicap_status,
                 "colleges": colleges,
-                "admin_status": admin_status,
-                "car_makes": car_makes,
+                "global_occupancy": global_occupancy,
+                "college_occupancy": college_occupancy,
             }
         except Exception as e:
             print(f"Error fetching statistics: {e}")
@@ -217,7 +218,24 @@ class UserFuncs:
             return True
         return False
     
+    def get_all_cities(self):
+        connection = psycopg.connect(self.db_url)
+        cursor = connection.cursor()
+        cursor.execute("SELECT cid, cname, state FROM cities ORDER BY cname")
+        return cursor.fetchall()
+
+    def insert_college(self, colname, cid, num_students):
+        connection = psycopg.connect(self.db_url)
+        cursor = connection.cursor()
+        cursor.execute(
+            "INSERT INTO college (colname, cid, num_students) VALUES (%s, %s, %s)",
+            (colname, cid, num_students)
+        )
+        connection.commit()
+        connection.close()
+
     
+
 if __name__ == '__main__':
     service = UserFuncs()
 

@@ -95,3 +95,29 @@ class CarFuncs:
         except Exception as e:
             print(f"Error fetching cars: {e}")
             return []
+
+    def get_parking_statistics(self):
+        try:
+            connection = psycopg.connect(self.db_url)
+            cursor = connection.cursor()
+
+            # Query to get occupied and unoccupied spaces grouped by college and lot
+            cursor.execute("""
+                SELECT 
+                    college_lot.colname AS college_name,
+                    lots.lot_name AS lot_name,
+                    COUNT(*) FILTER (WHERE spaces.is_occupied = TRUE) AS occupied_count,
+                    COUNT(*) FILTER (WHERE spaces.is_occupied = FALSE) AS unoccupied_count
+                FROM spaces
+                JOIN lots ON spaces.lid = lots.lid
+                JOIN college_lot ON lots.lid = college_lot.lid
+                GROUP BY college_lot.colname, lots.lot_name
+                ORDER BY college_lot.colname, lots.lot_name
+            """)
+            parking_data = cursor.fetchall()  # Example result: [(college1, lot1, 10, 5), (college1, lot2, 8, 7), ...]
+            connection.close()
+
+            return parking_data
+        except Exception as e:
+            print(f"Error fetching parking statistics: {e}")
+            return []

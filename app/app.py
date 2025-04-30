@@ -165,28 +165,58 @@ def adminpage(uid):
     user_type_data = stats["user_types"]
     handicap_data = stats["handicap_status"]
     college_data = stats["colleges"]
-    admin_data = stats["admin_status"]
-    car_make_data = stats["car_makes"]
+    global_occupancy = stats["global_occupancy"]
+    college_occupancy = stats["college_occupancy"]
+
+    global_occupancy_raw = stats.get("global_occupancy", [(0, 0)])
+    global_occupancy = list(global_occupancy_raw[0])  # turns (24, 76) → [24, 76]
 
     return render_template(
         'admin.html',
         uid=uid,
-        user_type_data=user_type_data,
-        handicap_data=handicap_data,
-        college_data=college_data,
-        admin_data=admin_data,
-        car_make_data=car_make_data
+        user_type_data=stats.get("user_types", []),
+        handicap_data=stats.get("handicap_status", []),
+        college_data=stats.get("colleges", []),
+        global_occupancy=global_occupancy,
+        occupancy_by_college=stats.get("college_occupancy", [])
     )
 
-@app.route("/adminpage/<uid>/users")
-def admin_users(uid):
+
+@app.route("/adminpage/<uid>/parking")
+def parking_info(uid):
     valid = user_funcs.check_user_exists(uid)
     if not valid:
         return render_template('login.html', error="Unable to find account. Please login again.")
 
-    # Fetch all users from the database
-    users = user_funcs.get_users()
-    return render_template("admin_users.html", uid=uid, users=users)
+    # Fetch parking data
+    try:
+        parking_stats = car_funcs.get_parking_statistics()  # Returns [(college, lot, occupied, unoccupied), ...]
+        print("Parking Stats:", parking_stats)  # Debugging: Print the parking stats
+    except Exception as e:
+        print(f"Error fetching parking data: {e}")
+        parking_stats = []
+
+    return render_template("parking_info.html", uid=uid, parking_stats=parking_stats)
+
+@app.route("/input_college_page/<uid>")
+def input_college_page(uid):
+    cities = user_funcs.get_all_cities()
+    return render_template("input_college.html", uid=uid, cities=cities)
+
+@app.route("/input_college/<uid>", methods=["POST"])
+def input_college(uid):
+    colname = request.form.get("college_name")
+    cid = request.form.get("cid")
+    num_students = request.form.get("num_students")
+
+    try:
+        user_funcs.insert_college(colname, cid, num_students)
+        flash(f"Successfully added college '{colname}'", "success")
+    except Exception as e:
+        flash(f"Error adding college: {e}", "danger")
+
+    return redirect(url_for("input_college_page", uid=uid))
+
 
 
 
