@@ -122,11 +122,11 @@
         {% for entry in college_list %}
           <div
             class="option-item"
-            data-filter="{{ (entry.colname + ' ' + entry.cname + ' ' + entry.state).lower() }}"
-            onclick="selectCollege('{{ entry.colname|e }}', '{{ entry.cname|e }}', '{{ entry.state|e }}')"
+            data-filter="{{ (entry[0] + ' ' + entry[1] + ' ' + entry[2]).lower() }}"
+            onclick="selectCollege('{{ entry[0]|e }}', '{{ entry[1]|e }}', '{{ entry[2]|e }}')"
           >
-            <strong>{{ entry.colname }}</strong><br>
-            <small>{{ entry.cname }}, {{ entry.state }}</small>
+            <strong>{{ entry[0] }}</strong><br>
+            <small>{{ entry[1] }}, {{ entry[2] }}</small>
           </div>
         {% endfor %}
       </div>

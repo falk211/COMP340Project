@@ -110,12 +110,12 @@ def create_table():
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS attending (
     uid   INTEGER NOT NULL,
-    college TEXT NOT NULL,
+    colname TEXT NOT NULL,
     state TEXT NOT NULL,
     cid   INTEGER NOT NULL,
-    PRIMARY KEY (uid, college, state, cid),
+    PRIMARY KEY (uid, colname, state, cid),
     FOREIGN KEY (uid) REFERENCES users(uid),
-    FOREIGN KEY (college, cid) REFERENCES college(colname, cid)
+    FOREIGN KEY (colname, cid) REFERENCES college(colname, cid)
 );""")
 
         conn.commit()

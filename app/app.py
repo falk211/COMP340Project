@@ -106,19 +106,19 @@ def add_car(uid):
 
 @app.route("/add_college_page/<uid>")
 def add_college_page(uid):
-    all_colleges = user_funcs.get_all_colleges()
+    all_colleges = user_funcs.get_user_colleges(uid)
     print(all_colleges)
     return render_template("add_college.html", college_list = all_colleges, uid=uid)
 
 @app.route("/add_college/<uid>", methods=["POST"])
 def add_college(uid):
-    college = request.form.get("college_name")
+    colname = request.form.get("college_name")
     city = request.form.get("city_name")
     state = request.form.get("state")
-    print(college, city, state)
-    success_msg = f"Successfully added {college} ({city}, {state})"
-    result = user_funcs.add_college(uid, college, city, state)
-    print(f"Added college {college} for user {uid}")
+    print(colname, city, state)
+    success_msg = f"Successfully added {colname} ({city}, {state})"
+    result = user_funcs.add_college(uid, colname, city, state)
+    print(f"Added college {colname} for user {uid}")
     all_colleges = user_funcs.get_all_colleges()
     if result:
         return redirect(url_for("homepage", uid=uid))
@@ -128,7 +128,7 @@ def add_college(uid):
 
 @app.route("/remove_college/<uid>")
 def remove_college(uid):
-    return f"Remove college for user {uid}"
+    return render_template("remove_college.html", uid=uid)
 
 
 
