@@ -39,6 +39,39 @@ class CarFuncs:
 
         except Exception as e:
             print(f"Error adding car: {e}")
+
+
+
+    def get_lots(self, uid):
+        conn = psycopg.connect(self.db_url, row_factory=dict_row)
+        cursor = conn.cursor()
+        cursor.execute('''with user_lots as (select lot_name, l.lid, num_total from lots l join college_lot cl on l.lid = cl.lid where cl.colname in (select colname from attending where uid = %s))
+        select lot_name, num_total, count(*) from spaces join user_lots on spaces.lid = user_lots.lid where is_occupied = false group by lot_name, num_total;
+        ''', (uid,))
+        lots = cursor.fetchall()
+        conn.close()
+        return lots
+
+
+    def reserve_space(self, uid, lot_name):
+        try:
+            conn = psycopg.connect(self.db_url, row_factory=dict_row)
+            cursor = conn.cursor()
+            cursor.execute('''select lid from lots where lot_name = %s''', (lot_name,))
+            lid = cursor.fetchone()['lid']
+            cursor.execute('''select space_num from spaces where lid = %s''', (lid,))
+            space_num = cursor.fetchone()['space_num']
+            cursor.execute('''update spaces set is_occupied = true where lid = %s and space_num = %s''', (lid, space_num,))
+            conn.commit()
+            cursor.execute('''insert into parking (uid, lid, space_num, time_in, time_out) values (%s, %s, %s, now(), null)''', (uid, lid, space_num,))
+            conn.commit()
+            conn.close()
+
+            return True
+        except Exception as e:
+            print(f"Error reserving space: {e}")
+            return False
+
     
 
     def get_cars(self, uid):
