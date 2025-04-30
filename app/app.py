@@ -139,8 +139,18 @@ def remove_college_page(uid):
 
 @app.route("/remove_college/<uid>", methods=["POST"])
 def remove_college(uid):
-<<<<<<< HEAD
-    return render_template("remove_college.html", uid=uid)
+    colname = request.form.get("college_name")
+    city = request.form.get("city_name")
+    state = request.form.get("state")
+    print(colname, city, state)
+    success_msg = f"Successfully added {colname} ({city}, {state})"
+    result = user_funcs.remove_college(uid, colname, city, state)
+    print(f"Added college {colname} for user {uid}")
+    all_colleges = user_funcs.get_all_colleges()
+    if result:
+        return redirect(url_for("homepage", uid=uid))
+
+
 
 
 @app.route("/adminpage/<uid>")
@@ -177,18 +187,6 @@ def admin_users(uid):
     # Fetch all users from the database
     users = user_funcs.get_users()
     return render_template("admin_users.html", uid=uid, users=users)
-=======
-    colname = request.form.get("college_name")
-    city = request.form.get("city_name")
-    state = request.form.get("state")
-    print(colname, city, state)
-    success_msg = f"Successfully added {colname} ({city}, {state})"
-    result = user_funcs.remove_college(uid, colname, city, state)
-    print(f"Added college {colname} for user {uid}")
-    all_colleges = user_funcs.get_all_colleges()
-    if result:
-        return redirect(url_for("homepage", uid=uid))
->>>>>>> refs/remotes/origin/main
 
 
 
