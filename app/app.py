@@ -21,21 +21,23 @@ def login():
     email = request.form.get("email")
     password = request.form.get("password")
 
-    print(email, password)
-
-    if email is None:
+    if not email:
         return jsonify({'error': 'Email is required'})
-    if password is None:
+    if not password:
         return jsonify({'error': 'Password is required'})
 
-
     uid = user_funcs.get_user_by_credentials(email, password)
-
+    
     if uid == -1:
         return jsonify({'error': 'Email not found'})
     if uid == 0:
         return render_template("login.html", error="Invalid password")
 
+    admin_status = user_funcs.check_is_admin(uid)
+    print(f"Admin status for user {uid}: {admin_status}")
+
+    if admin_status == True:
+        return redirect(url_for("adminpage", uid=uid))
     else:
         return redirect(url_for("homepage", uid=uid))
 
@@ -131,6 +133,40 @@ def remove_college(uid):
     return render_template("remove_college.html", uid=uid)
 
 
+@app.route("/adminpage/<uid>")
+def adminpage(uid):
+    valid = user_funcs.check_user_exists(uid)
+    if not valid:
+        return render_template('login.html', error="Unable to find account. Please login again.")
+
+    stats = user_funcs.get_user_statistics()
+
+    # Extract datasets for charts
+    user_type_data = stats["user_types"]
+    handicap_data = stats["handicap_status"]
+    college_data = stats["colleges"]
+    admin_data = stats["admin_status"]
+    car_make_data = stats["car_makes"]
+
+    return render_template(
+        'admin.html',
+        uid=uid,
+        user_type_data=user_type_data,
+        handicap_data=handicap_data,
+        college_data=college_data,
+        admin_data=admin_data,
+        car_make_data=car_make_data
+    )
+
+@app.route("/adminpage/<uid>/users")
+def admin_users(uid):
+    valid = user_funcs.check_user_exists(uid)
+    if not valid:
+        return render_template('login.html', error="Unable to find account. Please login again.")
+
+    # Fetch all users from the database
+    users = user_funcs.get_users()
+    return render_template("admin_users.html", uid=uid, users=users)
 
 
 

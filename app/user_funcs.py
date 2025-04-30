@@ -1,4 +1,3 @@
-
 import os
 import string
 import random
@@ -140,9 +139,59 @@ class UserFuncs:
         if result is None:
             return False
         return True
+    
+    def check_is_admin(self, uid):
+        try:
+            connection = psycopg.connect(f"host=dbclass.rhodescs.org dbname=practice user={'falwt-25'} password={'falwt-25'}")
+            cursor = connection.cursor()
+            cursor.execute("SELECT is_admin FROM users WHERE uid = %s", (uid,))
+            result = cursor.fetchone()
+            connection.close()
 
+            # Ensure the result is a boolean
+            if result is not None:
+                return result[0]  # Return the value of is_admin (True/False)
+            return False  # Default to False if no record is found
+        except Exception as e:
+            print(f"Error in check_is_admin: {e}")
+            return False  # Default to False in case of an error
 
+    def get_user_statistics(self):
+        try:
+            connection = psycopg.connect(f"host=dbclass.rhodescs.org dbname=practice user={'falwt-25'} password={'falwt-25'}")
+            cursor = connection.cursor()
 
+            # Count users by user type
+            cursor.execute("SELECT user_type, COUNT(*) FROM users GROUP BY user_type")
+            user_types = cursor.fetchall()
+
+            # Count users by handicap status
+            cursor.execute("SELECT is_handicap, COUNT(*) FROM users GROUP BY is_handicap")
+            handicap_status = cursor.fetchall()
+
+            # Count users by college
+            cursor.execute("SELECT colname, COUNT(*) FROM attending GROUP BY colname")
+            colleges = cursor.fetchall()
+
+            # Count admin vs non-admin users
+            cursor.execute("SELECT is_admin, COUNT(*) FROM users GROUP BY is_admin")
+            admin_status = cursor.fetchall()
+
+            # Count cars by make
+            cursor.execute("SELECT make, COUNT(*) FROM cars GROUP BY make")
+            car_makes = cursor.fetchall()
+
+            connection.close()
+            return {
+                "user_types": user_types,
+                "handicap_status": handicap_status,
+                "colleges": colleges,
+                "admin_status": admin_status,
+                "car_makes": car_makes,
+            }
+        except Exception as e:
+            print(f"Error fetching statistics: {e}")
+            return {}
 
 if __name__ == '__main__':
     service = UserFuncs()
