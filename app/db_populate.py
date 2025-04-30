@@ -105,6 +105,94 @@ def link_lots_to_colleges():
         except Exception as e:
             print(f"Error linking lot {lid} to college {colname} ({cid}): {e}")
 
+def link_spaces_to_lots():
+    cursor.execute("SELECT lid from lots;")
+    lot_ids = [row[0] for row in cursor.fetchall()]
+
+    for lid in lot_ids:
+        cursor.execute("SELECT num_handicap, num_guest, num_faculty, num_students, num_total FROM lots WHERE lid = %s", (lid,))
+        att = cursor.fetchall()
+        num_handicap = att[0][0]
+        num_guest = att[0][1]
+        num_faculty = att[0][2]
+        num_students = att[0][3]
+        num_total = att[0][4]
+
+        for i in range(num_total):
+            decider = random.choice(range(1, 4))
+            if decider >1:
+                if num_handicap > 0:
+                    cursor.execute("INSERT INTO spaces (snum, lid,user_restriction, is_handicap, is_occupied) VALUES (%s, %s, %s, %s, %s)",(i, lid, "student",True, False))
+                    num_handicap -= 1
+                elif num_guest > 0:
+                    cursor.execute(
+                        "INSERT INTO spaces (snum, lid,user_restriction, is_handicap, is_occupied) VALUES (%s, %s, %s, %s, %s)",
+                        (i, lid, "guest",False,False))
+                    num_guest -= 1
+                elif num_faculty > 0:
+                    cursor.execute(
+                        "INSERT INTO spaces (snum, lid,user_restriction, is_handicap, is_occupied) VALUES (%s, %s, %s, %s, %s)",
+                        (i, lid, "faculty",False, False))
+                    num_faculty -= 1
+                else:
+                    cursor.execute(
+                        "INSERT INTO spaces (snum, lid,user_restriction, is_handicap, is_occupied) VALUES (%s, %s, %s, %s, %s)",
+                        (i, lid, "student",False, False))
+            else:
+                if num_handicap > 0:
+                    cursor.execute("INSERT INTO spaces (snum, lid,user_restriction, is_handicap, is_occupied) VALUES (%s, %s, %s, %s, %s)",(i, lid, "student", True, True))
+                    num_handicap -= 1
+                elif num_guest > 0:
+                    cursor.execute(
+                        "INSERT INTO spaces (snum, lid,user_restriction, is_handicap, is_occupied) VALUES (%s, %s, %s, %s, %s)",
+                        (i, lid, "guest",False,True))
+                    num_guest -= 1
+                elif num_faculty > 0:
+                    cursor.execute(
+                        "INSERT INTO spaces (snum, lid,user_restriction, is_handicap, is_occupied) VALUES (%s, %s, %s, %s, %s)",
+                        (i, lid, "faculty",False,True))
+                    num_faculty -= 1
+                else:
+                    cursor.execute(
+                        "INSERT INTO spaces (snum, lid,user_restriction, is_handicap, is_occupied) VALUES (%s, %s, %s, %s, %s)",
+                        (i, lid, "student",False,True))
+
+
+def insert_parking_data(num =10):
+    cursor.execute("SELECT uid FROM users;")
+    user_ids = [row[0] for row in cursor.fetchall()]
+
+    for _ in range(num):
+        cursor.execute("""
+                    SELECT lid, snum FROM spaces
+                    WHERE is_occupied = FALSE
+                """)
+        spaces = cursor.fetchall()
+
+        uid = random.choice(user_ids)
+        lid, snum = random.choice(spaces)
+
+        time_in = fake.date_time_between(start_date='-30d', end_date='now')
+
+        if random.random() < 0.7:
+            duration = timedelta(minutes=random.randint(15, 300))
+            time_out = time_in + duration
+            still_parked = False
+        else:
+            time_out = None
+            still_parked = True
+
+        cursor.execute("""
+                        INSERT INTO parking (uid, lid, snum, time_in, time_out)
+                        VALUES (%s, %s, %s, %s, %s)
+                    """, (uid, lid, snum, time_in, time_out))
+
+        if still_parked:
+                cursor.execute("""
+                            UPDATE spaces
+                            SET is_occupied = TRUE
+                            WHERE lid = %s AND snum = %s
+                        """, (lid, snum))
 def run():
     insert_cities()
     insert_lots()
@@ -114,6 +202,8 @@ def run():
     insert_colleges()
     link_users_to_attending()
     link_lots_to_colleges()
+    link_spaces_to_lots()
+    insert_parking_data()
     conn.commit()
     print("Data inserted successfully.")
 

@@ -18,7 +18,7 @@ def reset_tables():
 
                 # List of tables (drop in the correct order to avoid FK issues)
                 tables = [
-                    "users", "cities", "lots", "cars", "user_car", "attending", "college", "college_lot", "parking",
+                    "users", "cities", "lots", "cars", "user_car", "attending", "college", "college_lot", "parking","spaces"
                 ]
 
                 # Drop tables with CASCADE to remove dependencies

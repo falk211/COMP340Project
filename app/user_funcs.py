@@ -115,12 +115,7 @@ class UserFuncs:
         cursor.execute("""SELECT co.colname, ci.cname, ci.state
             FROM college co
             JOIN cities ci ON co.cid = ci.cid
-            WHERE NOT EXISTS (
-                SELECT 1 
-                FROM attending a
-                WHERE a.uid = %s
-                AND a.colname = co.colname
-                AND a.cid = co.cid
+            WHERE NOT EXISTS (SELECT 1 FROM attending a WHERE a.uid = %s AND a.colname = co.colname AND a.cid = co.cid
             );""", (uid,))
         colleges = cursor.fetchall()
         connection.close()

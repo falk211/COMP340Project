@@ -139,7 +139,7 @@ def create_table():
     snum     INTEGER NOT NULL,
     time_in  TIMESTAMP NOT NULL,
     time_out TIMESTAMP,
-    PRIMARY KEY (uid, lid, snum, time_in, time_out),
+    PRIMARY KEY (uid, lid, snum, time_in),
     FOREIGN KEY (uid) REFERENCES users(uid),
     FOREIGN KEY (lid) REFERENCES lots(lid)
 );
@@ -152,13 +152,12 @@ def create_table():
 
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS spaces (
-    space_num       INTEGER NOT NULL,
+    snum       INTEGER NOT NULL,
     lid             INTEGER NOT NULL,  
-    car_restrictions car_restrictions NOT NULL,  
     user_restriction user_type NOT NULL,  
     is_handicap     BOOLEAN NOT NULL,
     is_occupied     BOOLEAN NOT NULL,
-    PRIMARY KEY (space_num, lid),
+    PRIMARY KEY (snum, lid),
     FOREIGN KEY (lid) REFERENCES lots(lid)
 );
 """)
