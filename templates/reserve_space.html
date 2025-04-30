@@ -90,9 +90,9 @@
       <label for="lot">Select a Parking Lot:</label>
       <select name="lot" id="lot" required>
         <option value="">-- Choose a lot --</option>
-        {% for lot in lots %}
-          <option value="{{ lot.lot_name }}">
-            {{ lot.lot_name }} ({{ lot.count }} of {{ lot.num_total }} available)
+        {% for lot in lot_list %}
+          <option value="{{ lot['lot_name'] }}">
+            {{ lot['lot_name'] }} ({{ lot['count'] }} of {{ lot['num_total'] }} available)
           </option>
         {% endfor %}
       </select>
