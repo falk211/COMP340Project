@@ -200,13 +200,12 @@ class UserFuncs:
             result = cursor.fetchone()
             connection.close()
 
-            # Ensure the result is a boolean
             if result is not None:
-                return result[0]  # Return the value of is_admin (True/False)
-            return False  # Default to False if no record is found
+                return result[0]  
+            return False  
         except Exception as e:
             print(f"Error in check_is_admin: {e}")
-            return False  # Default to False in case of an error
+            return False  
 
     def get_user_statistics(self):
         try:

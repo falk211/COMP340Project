@@ -14,25 +14,24 @@ class CarFuncs:
 
     def add_car(self, uid, year, make, model, lplate, lstate):
         try:
-            # Connect to the database
+            
             connection = psycopg.connect(self.db_url)
             cursor = connection.cursor()
 
-            # Insert the car into the cars table if it doesn't already exist
+            
             cursor.execute("""
                 INSERT INTO cars (year, make, model, lplate, lstate)
                 VALUES (%s, %s, %s, %s, %s)
                 ON CONFLICT (lplate, lstate) DO NOTHING
             """, (year, make, model, lplate, lstate))
 
-            # Link the car to the user in the user_car table
+            #link to user
             cursor.execute("""
                 INSERT INTO user_car (uid, lstate, lplate)
                 VALUES (%s, %s, %s)
                 ON CONFLICT (uid, lstate, lplate) DO NOTHING
             """, (uid, lstate, lplate))
 
-            # Commit the transaction
             connection.commit()
             print(f"Car {make} {model} ({year}) added successfully for user {uid}.")
             connection.close()
@@ -76,7 +75,7 @@ class CarFuncs:
 
     def get_cars(self, uid):
         try:
-            # Connect to the database
+            
             connection = psycopg.connect(self.db_url, row_factory=dict_row)
             cursor = connection.cursor()
 
@@ -94,30 +93,4 @@ class CarFuncs:
 
         except Exception as e:
             print(f"Error fetching cars: {e}")
-            return []
-
-    def get_parking_statistics(self):
-        try:
-            connection = psycopg.connect(self.db_url)
-            cursor = connection.cursor()
-
-            # Query to get occupied and unoccupied spaces grouped by college and lot
-            cursor.execute("""
-                SELECT 
-                    college_lot.colname AS college_name,
-                    lots.lot_name AS lot_name,
-                    COUNT(*) FILTER (WHERE spaces.is_occupied = TRUE) AS occupied_count,
-                    COUNT(*) FILTER (WHERE spaces.is_occupied = FALSE) AS unoccupied_count
-                FROM spaces
-                JOIN lots ON spaces.lid = lots.lid
-                JOIN college_lot ON lots.lid = college_lot.lid
-                GROUP BY college_lot.colname, lots.lot_name
-                ORDER BY college_lot.colname, lots.lot_name
-            """)
-            parking_data = cursor.fetchall()  # Example result: [(college1, lot1, 10, 5), (college1, lot2, 8, 7), ...]
-            connection.close()
-
-            return parking_data
-        except Exception as e:
-            print(f"Error fetching parking statistics: {e}")
             return []
