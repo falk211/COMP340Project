@@ -203,7 +203,6 @@ def adminpage(uid):
 
     stats = user_funcs.get_user_statistics()
 
-    # Extract datasets for charts
     user_type_data = stats["user_types"]
     handicap_data = stats["handicap_status"]
     college_data = stats["colleges"]
@@ -211,7 +210,7 @@ def adminpage(uid):
     college_occupancy = stats["college_occupancy"]
 
     global_occupancy_raw = stats.get("global_occupancy", [(0, 0)])
-    global_occupancy = list(global_occupancy_raw[0])  # turns (24, 76) → [24, 76]
+    global_occupancy = list(global_occupancy_raw[0]) 
 
     return render_template(
         'admin.html',
@@ -230,10 +229,9 @@ def parking_info(uid):
     if not valid:
         return render_template('login.html', error="Unable to find account. Please login again.")
 
-    # Fetch parking data
     try:
-        parking_stats = car_funcs.get_parking_statistics()  # Returns [(college, lot, occupied, unoccupied), ...]
-        print("Parking Stats:", parking_stats)  # Debugging: Print the parking stats
+        parking_stats = car_funcs.get_parking_statistics()  
+        print("Parking Stats:", parking_stats)  
     except Exception as e:
         print(f"Error fetching parking data: {e}")
         parking_stats = []

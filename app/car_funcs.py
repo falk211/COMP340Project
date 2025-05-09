@@ -18,7 +18,6 @@ class CarFuncs:
             connection = psycopg.connect(self.db_url)
             cursor = connection.cursor()
 
-            
             cursor.execute("""
                 INSERT INTO cars (year, make, model, lplate, lstate)
                 VALUES (%s, %s, %s, %s, %s)
@@ -75,11 +74,9 @@ class CarFuncs:
 
     def get_cars(self, uid):
         try:
-            
             connection = psycopg.connect(self.db_url, row_factory=dict_row)
             cursor = connection.cursor()
 
-            # Fetch the cars associated with the user
             cursor.execute("""
                 SELECT cars.year, cars.make, cars.model, cars.lplate, cars.lstate
                 FROM cars
